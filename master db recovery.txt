@@ -1,0 +1,70 @@
+Scenario 1-
+When master db needs to be restored to recover user data or objects.
+
+Step 1: Switch to Single User Mode.
+        To restore master db, the server must be in single-user mode.
+
+        To do so, stop the mssqlserver server and restart in single user mode.
+        In cmd, run-> net stop mssqlserver
+
+        now, run-> net start mssqlserver /m 
+        This will start server in single user mode.
+
+Step 2: Restore master db.
+        RESTORE DATABASE MASTER FROM DISK ="C:\masterbackupfile.bak" WITH REPLACE
+
+        above command will restore the db and shut down the sql server.
+
+Step 3: Now restart the server, a normal.
+        net start mssqlserver
+
+Step 4: Check for any error.
+        dbcc checkdb.
+
+
+
+Scenario 2-
+When SQL server is not able to start, master db is corrupted.
+
+To restore this we need to have another mssqlserver instance running with the same major version, lets call it server B.
+
+Step 1: Restore the master db backup (from server A) to the working sql server instance (Server B) as if it was a regular user db. 
+        An alternate name will need to be used, e.g. master_recovery.
+
+        RESTORE DATABASE master_recovery FROM DISK = 'C:\backups\master_backup.bak' WITH
+        MOVE 'master' TO 'C:\master_recovery.mdf',
+        MOVE 'mastlog' TO 'C:\mastlog_recovery.ldf';
+
+        (Move/Rename data file and log to your desired location)
+
+Step 2: Now that db is online, now detach that database from the working instance(Server B)
+
+        USE [master]
+        GO
+        EXEC master.dbo.sp_detach_db @dbname = N'master_recovery'
+        GO
+
+        sp_detach_db is a system stored procedure used to detach a database
+        Detaching:
+                removes database from the SQL Server instance
+                leaves the .mdf and .ldf files on disk
+                database can later be attached again
+
+Step 3: At this point the 2 database files are no longer attached to the working instance of the SQL Server.
+        Now move the 2 files to the server hoisting the instance experiencing the problem with master. (Server A)
+
+        Copy .mdf & .ldf to default files for the master database (server A).
+        Check default file path ->
+                Go to sql serve configuration manager.
+                Right Click the SQL Server, click properties.
+                Go to Startup Parameters.
+
+        Copy the files to the path.
+
+Step 4: Rename the original existing files (corrupted files).
+        Now, rename the copied files (master_recovery.mdf, mastlog_recovery.ldf) as master and mastlog.
+
+        Now when we start server, it will read from the new files.
+
+Step 5: Start the SQL Server from the sql serve configuration manager.
+        DBCC CHECKDB
