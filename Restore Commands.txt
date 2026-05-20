@@ -1,0 +1,38 @@
+--Restore Full Backup (By default its with recovery)
+RESTORE DATABASE dbname
+FROM DISK = 'C:\backupfile.bak'
+
+--Restore With NoRecovery
+RESTORE DATABASE dbname
+FROM DISK = 'C:\backupfile.bak'
+WITH NORECOVERY
+
+--Restore DB having differential backup as final backup.
+RESTORE DATABASE dbname
+FROM DISK = 'C:\backupfile.bak'
+WITH NORECOVERY
+
+RESTORE DATABSE dbname
+FROM DISK = 'C:\backupfile_diff.bak'
+WITH RECOVERY
+
+--Restore DB having transaction log backup as final backup.
+RESTORE DATABASE dbname
+FROM DISK = 'C:\backupfile.bak'
+WITH NORECOVERY
+
+RESTORE DATABSE dbname
+FROM DISK = 'C:\backupfile_diff.bak'
+WITH NORECOVERY
+
+RESTORE LOG dbname
+FROM DISK = 'C:\backupfile_log.trn'
+WITH RECOVERY
+
+--Point in Time Restore (STOPAT)
+--(Restore full backup with norecovery, then restore latest diff backup with norecovery and then the log backups til the last one with no recovery, for the last log backup - )
+
+RESTORE LOG dbname
+FROM DISK = 'C:\backup_log4.trn'
+WITH STOPAT = '2026-05-13 13:29:59.000', RECOVERY
+
