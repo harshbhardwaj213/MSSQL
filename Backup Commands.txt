@@ -1,0 +1,42 @@
+--Copy-only Full Backup (Does not affect differential backup chain)
+BACKUP DATABASE dbname 
+TO DISK = 'C:\backup_copyOnly.bak' 
+WITH COPY_ONLY
+
+--Copy-only log backup (Independent log backup)
+BACKUP LOG dbname 
+TO DISK = 'C:\logbackup_copyOnly.trn' 
+WITH COPY_ONLY
+
+--Compressed Backup (Enterprise Edition)
+BACKUP DATABASE dbname 
+TO DISK = 'C:\compressed.bak' 
+WITH COMPRESSION
+
+--Backup with initialization (Overwrites existing backup file)
+BACKUP DATABASE dbname 
+TO DISK = 'C:\dbbackup.bak' 
+WITH INIT
+
+--Backup with Format (Creates new media set and erases old headers)
+BACKUP DATABASE MyDatabase
+TO DISK = 'C:\Backup\MyDatabase.bak'
+WITH FORMAT;
+
+--Verify Backup (Checks Backup Integrity)
+RESTORE VERIFYONLY
+FROM DISK = 'C:\backup.bak'
+
+--Partial Backup
+BACKUP DATABASE dbname
+READ_WRITE_FILEGROUPS
+TO DISK = 'C:\backup.bak'
+
+--Backup Encryption
+BACKUP DATABASE dbname 
+TO DISK = 'C:\backup.bak'
+WITH ENCRYPTION
+(
+	ALGORITHM =AES_256,
+	SERVER CERTIFICATE = MyCertificate
+);
