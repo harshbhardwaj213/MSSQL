@@ -1,0 +1,8 @@
+--Transaction Log Backup
+BACKUP LOG dbname TO DISK = 'C:\logbackup.trn'
+
+--Tail-Log Backup
+BACKUP LOG dbname TO DISK = 'C:\logbackup.trn' WITH NORECOVERY
+
+--To get backup's FirstLSN and LastLSN values
+RESTORE HEADERONLY FROM DISK = 'log1.bak'
