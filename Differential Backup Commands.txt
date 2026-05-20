@@ -1,0 +1,2 @@
+BACKUP DATABASE dbname TO DISK = 'C:\Temp\dbname_backup_full.BAK'
+BACKUP DATABASE dbname TO DISK = 'C:\Temp\dbname_backup_diff.BAK' WITH DIFFERENTIAL
